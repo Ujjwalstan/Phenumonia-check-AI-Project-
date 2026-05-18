@@ -172,10 +172,21 @@ const Navbar = () => {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    const targetId = href.replace('#', '');
-    const element = document.getElementById(targetId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (href === '#') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const targetId = href.replace('#', '');
+      const element = document.getElementById(targetId);
+      if (element) {
+        const offset = 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
     }
     setIsMenuOpen(false);
   };
@@ -203,9 +214,10 @@ const Navbar = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+              className="relative text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors group"
             >
               {link.name}
+              <span className="absolute -bottom-1.5 left-0 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full rounded-full"></span>
             </motion.a>
           ))}
           <motion.a
@@ -213,9 +225,10 @@ const Navbar = () => {
             onClick={(e) => handleNavClick(e, '#contact')}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="px-6 py-2.5 text-sm font-semibold rounded-full bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all active:scale-95 cursor-pointer"
+            className="px-6 py-2.5 text-sm font-semibold rounded-full bg-indigo-600 text-white hover:bg-indigo-700 shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] transition-all duration-300 active:scale-95 cursor-pointer relative overflow-hidden group"
           >
-            Hire Me
+            <span className="relative z-10">Hire Me</span>
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
           </motion.a>
         </div>
 
@@ -271,11 +284,11 @@ const ProjectShowcase = ({ project, index }: ProjectShowcaseProps) => {
       className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-10 lg:gap-16 items-center`}
     >
       <div className="w-full lg:w-1/2 relative group">
-        <div className="relative rounded-[2.5rem] overflow-hidden card-shadow aspect-[16/10] bg-slate-100 border border-slate-100">
+        <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50 aspect-[16/10] bg-slate-100 border border-slate-200">
           <img 
             src={project.image} 
             alt={project.title} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-all duration-700 ease-out"
           />
           <div className="absolute top-6 left-6 px-4 py-1.5 glass bg-white/90 rounded-full text-xs font-mono uppercase tracking-widest text-indigo-600">
             {project.category}
@@ -333,6 +346,9 @@ export default function App() {
 
       {/* --- Hero Section --- */}
       <section className="relative min-h-screen flex items-center pt-28 overflow-hidden bg-slate-50/50">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        
         {/* Background Decorative Rings */}
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full border-[1.5px] border-indigo-100/50" />
         <div className="absolute top-[-15%] right-[-15%] w-[700px] h-[700px] rounded-full border-[1.5px] border-indigo-50/50" />
@@ -346,7 +362,7 @@ export default function App() {
                 className="inline-flex items-center gap-3 px-4 py-1.5 glass rounded-full text-xs font-semibold text-indigo-600 mb-8 border-indigo-100 shadow-sm shadow-indigo-100/20"
               >
                 <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-                <span>Open for 2026 Developer Internships</span>
+                <span>Available for Software Engineering Roles</span>
               </motion.div>
 
               <motion.h1
@@ -355,7 +371,7 @@ export default function App() {
                 transition={{ delay: 0.1 }}
                 className="text-7xl md:text-[5.5rem] font-display font-bold tracking-tight leading-[1] mb-8 text-slate-900"
               >
-                Building <span className="gradient-text">AI Systems</span> with Precision.
+                Building <span className="gradient-text">Robust Software</span> & AI Systems.
               </motion.h1>
 
               <motion.p
@@ -364,8 +380,7 @@ export default function App() {
                 transition={{ delay: 0.2 }}
                 className="text-xl md:text-2xl text-slate-500 font-light max-w-2xl leading-relaxed mb-12"
               >
-                I&apos;m <span className="text-slate-900 font-medium">Ujjwal Singh</span>, a Developer focused on
-                merging Computer Vision with real-world healthcare solutions.
+                I&apos;m <span className="text-slate-900 font-medium">Ujjwal Singh</span>, a passionate Software Engineer dedicated to crafting scalable applications and tackling complex challenges at the intersection of modern web development and AI.
               </motion.p>
 
               <motion.div
@@ -378,11 +393,20 @@ export default function App() {
                   href="#spotlight" 
                   onClick={(e) => {
                     e.preventDefault();
-                    document.getElementById('spotlight')?.scrollIntoView({ behavior: 'smooth' });
+                    const element = document.getElementById('spotlight');
+                    if (element) {
+                      const offset = 80;
+                      const elementPosition = element.getBoundingClientRect().top;
+                      const offsetPosition = elementPosition + window.pageYOffset - offset;
+                      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                    }
                   }}
-                  className="group px-10 py-5 bg-indigo-600 text-white font-bold rounded-2xl flex items-center gap-3 hover:bg-indigo-700 shadow-xl shadow-indigo-200 transition-all active:scale-95"
+                  className="group relative overflow-hidden px-10 py-5 bg-indigo-600 text-white font-bold rounded-2xl flex items-center gap-3 shadow-xl shadow-indigo-200 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-300 hover:-translate-y-1 active:scale-95 active:translate-y-0"
                 >
-                  View Final Year Project <ChevronRight size={18} className="transition-transform group-hover:translate-x-1" />
+                  <span className="relative z-10 flex items-center gap-3">
+                    View Final Year Project <ChevronRight size={18} className="transition-transform group-hover:translate-x-1" />
+                  </span>
+                  <div className="absolute inset-0 bg-linear-to-r from-indigo-600 via-indigo-500 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </a>
                 <div className="flex gap-4">
                   {[
@@ -475,8 +499,9 @@ export default function App() {
       </section>
 
       {/* --- About & Skills --- */}
-      <section id="about" className="py-32 relative bg-white">
-        <div className="container mx-auto px-6">
+      <section id="about" className="py-32 relative bg-white overflow-hidden">
+        <div className="absolute top-0 right-0 -mr-40 -mt-40 w-96 h-96 bg-indigo-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+        <div className="container mx-auto px-6 relative z-10">
           <div className="grid md:grid-cols-12 gap-20 items-start">
             <div className="md:col-span-12 lg:col-span-5">
               <h2 className="text-sm font-mono tracking-widest text-indigo-600 uppercase mb-6 font-bold">01. Professional Summary</h2>
@@ -490,15 +515,15 @@ export default function App() {
                    <div className="p-6 glass rounded-2xl bg-slate-50/50">
                      <div className="text-slate-400 mb-2 text-xs uppercase tracking-widest">Education</div>
                      <div className="text-slate-900 font-bold leading-tight">Saroj Institute of Technology and Management</div>
-                     <div className="text-indigo-600 text-sm mt-1">7.83 CGPA (AKTU)</div>
+                     <div className="text-indigo-600 text-sm mt-1">8.0 CGPA (Dr. A. P. J. Abdul Kalam Technical University, Lucknow)</div>
                    </div>
                    <div className="p-6 glass rounded-2xl bg-slate-50/50">
-                     <div className="text-slate-400 mb-2 text-xs uppercase tracking-widest">Status</div>
+                     <div className="text-slate-400 mb-2 text-xs uppercase tracking-widest">Availability</div>
                      <div className="text-emerald-600 font-bold flex items-center gap-2">
                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                       Actively Interviewing
+                       Open to Opportunities
                      </div>
-                     <div className="text-slate-500 text-sm mt-1">Uttar Pradesh, India</div>
+                     <div className="text-slate-500 text-sm mt-1">Seeking Software Engineering Roles</div>
                    </div>
                 </div>
               </div>
@@ -513,7 +538,7 @@ export default function App() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className="glass p-10 rounded-[2.5rem] card-shadow"
+                    className="glass p-10 rounded-[2.5rem] card-shadow group hover:shadow-2xl hover:shadow-indigo-100/40 border transition-all duration-300 border-slate-100 hover:border-indigo-200"
                   >
                     <div className="flex items-center gap-4 mb-8">
                       <div className={`p-3 rounded-2xl ${
@@ -649,10 +674,10 @@ export default function App() {
                 <button
                   key={cat}
                   onClick={() => setFilter(cat)}
-                  className={`px-8 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${
+                  className={`relative px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 ${
                     filter === cat 
-                    ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-200 scale-105' 
-                    : 'glass text-slate-500 hover:bg-white hover:text-indigo-600'
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200/50 -translate-y-0.5' 
+                    : 'bg-white text-slate-500 hover:bg-slate-50 hover:text-indigo-600 border border-slate-200 shadow-sm'
                   }`}
                 >
                   {cat}
@@ -686,15 +711,15 @@ export default function App() {
             {ACHIEVEMENTS.map((a, i) => (
               <motion.div
                 key={a.id}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="group relative glass p-10 rounded-[3rem] card-shadow hover:bg-slate-50 transition-all duration-500"
+                className="group relative bg-white p-10 rounded-[3rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl hover:shadow-indigo-100/50 border border-slate-100 hover:border-indigo-100 transition-all duration-500 hover:-translate-y-2"
               >
                 <div className="flex flex-col h-full">
                   <div className="flex items-start justify-between mb-10">
-                    <div className="p-5 rounded-3xl bg-white border border-slate-100 shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all">
+                    <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-110 group-hover:bg-indigo-50 group-hover:border-indigo-100 transition-all duration-300">
                       {a.icon}
                     </div>
                     <span className="font-mono text-slate-400 text-sm font-bold tracking-widest">{a.year}</span>
@@ -720,8 +745,8 @@ export default function App() {
             </p>
           </div>
 
-          <div className="w-full max-w-5xl mx-auto glass p-4 md:p-8 rounded-[3rem] card-shadow hover:border-indigo-400/30 transition-colors">
-            <div className="relative aspect-video w-full rounded-[2rem] overflow-hidden bg-slate-900 border border-slate-100 shadow-inner">
+          <div className="w-full max-w-5xl mx-auto bg-white p-4 md:p-8 rounded-[3rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-2xl hover:shadow-indigo-100/50 hover:border-indigo-200 transition-all duration-500 group">
+            <div className="relative aspect-video w-full rounded-[2rem] overflow-hidden bg-slate-900 shadow-inner group-hover:shadow-[0_0_30px_rgba(79,70,229,0.15)] transition-shadow duration-500">
               <iframe 
                 src="https://www.youtube.com/embed/-P5EyzjuPec?rel=0" 
                 title="Award Winning Movie" 
@@ -746,8 +771,9 @@ export default function App() {
       {/* --- Contact --- */}
       <section id="contact" className="py-32 bg-indigo-600 relative overflow-hidden">
         {/* Background Decorative Rings */}
-        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full border-[1.5px] border-white/10" />
-        <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full border-[1.5px] border-white/10" />
+        <div className="absolute top-0 right-0 w-full h-full bg-[linear-gradient(to_right,#ffffff1a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff1a_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-500/50 mix-blend-screen blur-3xl" />
+        <div className="absolute top-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-violet-500/50 mix-blend-screen blur-3xl" />
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
